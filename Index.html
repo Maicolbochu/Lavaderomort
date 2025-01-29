@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lavandería Exprés</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        let carrito = [];
+
+        function agregarAlCarrito(servicio) {
+            carrito.push(servicio);
+            actualizarCarrito();
+            document.getElementById('cart-icon').classList.add('bounce');
+            reproducirSonido('add-to-cart');
+            setTimeout(() => document.getElementById('cart-icon').classList.remove('bounce'), 500);
+        }
+
+        function actualizarCarrito() {
+            const carritoElement = document.getElementById('carrito');
+            carritoElement.innerHTML = '';
+            carrito.forEach((servicio, index) => {
+                carritoElement.innerHTML += `<li>${servicio.nombre} - $${servicio.precio} <button onclick="eliminarDelCarrito(${index})">❌</button></li>`;
+            });
+            document.getElementById('cart-count').textContent = carrito.length;
+        }
+
+        function eliminarDelCarrito(index) {
+            carrito.splice(index, 1);
+            actualizarCarrito();
+            reproducirSonido('remove-from-cart');
+        }
+
+        function encargar() {
+            if (carrito.length === 0) {
+                alert('Tu carrito está vacío.');
+                return;
+            }
+            let mensaje = 'Hola, quiero encargar:\n';
+            let total = 0;
+            carrito.forEach(servicio => {
+                mensaje += `- ${servicio.nombre} ($${servicio.precio})\n`;
+                total += servicio.precio;
+            });
+            mensaje += `Total: $${total}`;
+            if (confirm("¿Deseas continuar con el pedido por WhatsApp?")) {
+                window.open(`https://wa.me/59896897918?text=${encodeURIComponent(mensaje)}`, '_blank');
+            }
+        }
+
+        function reproducirSonido(tipo) {
+            const sonidos = {
+                'add-to-cart': 'https://www.soundjay.com/button/beep-07.mp3',
+                'remove-from-cart': 'https://www.soundjay.com/button/beep-05.mp3'
+            };
+            new Audio(sonidos[tipo]).play();
+        }
+    </script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #00c6ff, #0072ff);
+            color: white;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        h1 {
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        .bubbles {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+
+        .bubble {
+            position: absolute;
+            bottom: -50px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            animation: float 6s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            from { transform: translateY(0) translateX(0); }
+            to { transform: translateY(-100vh) translateX(50px); }
+        }
+
+        .producto {
+            border: 2px solid white;
+            border-radius: 15px;
+            padding: 15px;
+            margin: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            animation: fadeIn 0.5s ease-in-out;
+            display: inline-block;
+            width: 45%;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .producto img {
+            width: 100%;
+            max-height: 200px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        .producto button {
+            background: #ff4081;
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .producto button:hover {
+            background: #ff80ab;
+        }
+
+        .carrito-icono {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #ffeb3b;
+            border-radius: 50%;
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        .carrito {
+            display: none;
+            position: fixed;
+            right: 0;
+            top: 0;
+            width: 300px;
+            height: 100vh;
+            background: rgba(255, 255, 255, 0.9);
+            color: black;
+            padding: 20px;
+            border-radius: 10px 0 0 10px;
+            box-shadow: -2px 0 10px rgba(0, 0, 0, 0.3);
+            overflow-y: auto;
+        }
+
+        .mostrar {
+            display: block;
+            animation: slideIn 0.5s;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+
+        .bounce {
+            animation: bounce 0.5s;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .productos-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            overflow-x: hidden;
+            overflow-y: auto;
+            max-height: 90vh;
+            padding: 20px;
+        }
+
+        footer {
+            color: white;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+
+        footer a {
+            color: #ff4081;
+        }
+    </style>
+</head>
+<body>
+    <h1>Lavadero Mort
+        (Envio Gratis)
+    </h1>
+    <div class="bubbles"></div>
+    
+    <div class="productos-container">
+        <!-- Lavado de 15 prendas -->
+        <div class="producto">
+            <img src="https://centrors.org/wp-content/uploads/2022/06/clothes-scaled.jpg" alt="Lavado de 15 prendas">
+            <h3>Lavado de 15 prendas</h3>
+            <p>$250 UY</p>
+            <button onclick="agregarAlCarrito({ nombre: 'Lavado de 15 prendas', precio: 250 })">Agregar</button>
+        </div>
+        
+        <!-- Frazadas -->
+        <div class="producto">
+            <img src="https://f.fcdn.app/imgs/26d32f/mintt.com.uy/mintuy/bc58/original/catalogo/4660I18x20IB_4660I18x20IB_1/1920-1200/frazada-reversible-polar-sherpa-2-plazas-180x200-beige-frazada-reversible-polar-sherpa-2-plazas-180x200-beige.jpg" alt="Frazadas 2 Plazas">
+            <h3>Frazadas: 2 plazas</h3>
+            <p>$350 UY</p>
+            <button onclick="agregarAlCarrito({ nombre: 'Frazadas: 2 plazas', precio: 350 })">Agregar</button>
+        </div>
+        <div class="producto">
+            <img src="https://www.pronens.com/sites/default/files/manta-fabricada-en-tejido-de-tacto-muy-suave-y-calido-couch-valento.jpg" alt="Frazadas 1 Plaza y Media">
+            <h3>Frazadas: 1 plaza y media</h3>
+            <p>$300 UY</p>
+            <button onclick="agregarAlCarrito({ nombre: 'Frazadas: 1 plaza y media', precio: 300 })">Agregar</button>
+        </div>
+        <div class="producto">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRVfTzrzYFaQmbRkqOQKZ-GSwhPUKlt9-NpQw&s" alt="Frazadas 1 Plaza">
+            <h3>Frazadas: 1 plaza</h3>
+            <p>$250 UY</p>
+            <button onclick="agregarAlCarrito({ nombre: 'Frazadas: 1 plaza', precio: 250 })">Agregar</button>
+        </div>
+        
+        <!-- Acolchados de guata -->
+        <div class="producto">
+            <img src="https://http2.mlstatic.com/D_NQ_NP_964928-MLU76937375384_062024-O.webp" alt="Acolchados de Guata 2 Plazas">
+            <h3>Acolchados de guata: 2 plazas</h3>
+            <p>$300 UY</p>
+            <button onclick="agregarAlCarrito({ nombre: 'Acolchados de guata: 2 plazas', precio: 300 })">Agregar</button>
+        </div>
+        <div class="producto">
+            <img src="https://http2.mlstatic.com/D_NQ_NP_962251-MLA46765461623_072021-O.webp" alt="Acolchados de Guata 1 Plaza y Media">
+            <h3>Acolchados de guata: 1 plaza y media</h3>
+            <p>$250 UY</p>
+            <button onclick="agregarAlCarrito({ nombre: 'Acolchados de guata: 1 plaza y media', precio: 250 })">Agregar</button>
+        </div>
+        <div class="producto">
+            <img src="https://http2.mlstatic.com/D_NQ_NP_726932-MLU78995941986_092024-O.webp">
+            <h3>Acolchados de guata: 1 plaza</h3>
+            <p>$200 UY</p>
+            <button onclick="agregarAlCarrito({ nombre: 'Acolchados de guata: 1 plaza', precio: 200 })">Agregar</button>
+        </div>
+        
+        <!-- Acolchados de pluma -->
+        <div class="producto">
+            <img src="https://http2.mlstatic.com/D_NQ_NP_961552-MLU70615869602_072023-O.webp" alt="Acolchados de Pluma 2 Plazas">
+            <h3>Acolchados de pluma: 2 plazas</h3>
+            <p>$450 UY</p>
+            <button onclick="agregarAlCarrito({ nombre: 'Acolchados de pluma: 2 plazas', precio: 450 })">Agregar</button>
+        </div>
+        <div class="producto">
+            <img src="https://f.fcdn.app/imgs/a9813a/mintt.com.uy/mintuy/c283/original/catalogo/2300393340003VC_2300393340003VC_1/800_800/acolchado-reversible-queen-verde-y-celeste-acolchado-reversible-queen-verde-y-celeste.jpg" alt="Acolchados de Pluma 1 Plaza y Media">
+            <h3>Acolchados de pluma: 1 plaza y media</h3>
+            <p>$400 UY</p>
+            <button onclick="agregarAlCarrito({ nombre: 'Acolchados de pluma: 1 plaza y media', precio: 400 })">Agregar</button>
+        </div>
+        <div class="producto">
+            <img src="https://f.fcdn.app/imgs/7f2a38/mintt.com.uy/mintuy/a5d7/original/catalogo/2300393340003BM_2300393340003BM_1/800_800/acolchado-reversible-queen-beige-y-marron-acolchado-reversible-queen-beige-y-marron.jpg" alt="Acolchados de Pluma 1 Plaza">
+            <h3>Acolchados de pluma: 1 plaza</h3>
+            <p>$350 UY</p>
+            <button onclick="agregarAlCarrito({ nombre: 'Acolchados de pluma: 1 plaza', precio: 350 })">Agregar</button>
+        </div>
+    </div>
+
+    <div id="cart-icon" class="carrito-icono" onclick="document.getElementById('carrito-container').classList.toggle('mostrar')">
+        🛒 <span id="cart-count">0</span>
+    </div>
+
+    <div id="carrito-container" class="carrito">
+        <h2>Tu carrito</h2>
+        <ul id="carrito"></ul>
+        <button onclick="encargar()">Encargar por WhatsApp</button>
+        <button onclick="document.getElementById('carrito-container').classList.remove('mostrar')">Cerrar</button>
+    </div>
+
+    <footer><p>Página creada por Maicol Boghtchumian. Sígueme en Instagram: <a href="https://www.instagram.com/maicolbochu" target="_blank">@maicolbochu</a></p></footer>
+</body>
+</html>
